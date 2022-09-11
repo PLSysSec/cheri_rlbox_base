@@ -1,3 +1,9 @@
 [submodule "cheri_rlbox"]
 	path = cheri_rlbox
 	url = git@github.com:PLSysSec/cheri_rlbox.git
+[submodule "tools/mswasm-wasi-sdk"]
+	path = tools/mswasm-wasi-sdk
+	url = git@github.com:PLSysSec/mswasm-wasi-sdk.git
+[submodule "tools/rWasm"]
+	path = tools/rWasm
+	url = git@github.com:secure-foundations/rWasm.git
