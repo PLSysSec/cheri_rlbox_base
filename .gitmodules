@@ -7,3 +7,6 @@
 [submodule "tools/rWasm"]
 	path = tools/rWasm
 	url = git@github.com:secure-foundations/rWasm.git
+[submodule "tools/cheribuild"]
+	path = tools/cheribuild
+	url = git@github.com:CTSRD-CHERI/cheribuild.git
