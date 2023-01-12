@@ -3,7 +3,7 @@
 Tested on Ubuntu 22
 
 ### To build
-`sudo apt-get install clang-format`
+`sudo apt-get install clang-format`  
 `make bootstrap`
 
 
