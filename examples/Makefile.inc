@@ -6,12 +6,13 @@ CXX=clang++
 
 # Tool-root definitions
 # TODO: prebuilt morello-sdk binaries?
-MORELLO_SDK_ROOT:=/usr/local/home/evan/cheri/output/morello-sdk
+MORELLO_SDK_ROOT:=$(HOME)/cheri/output/morello-sdk
 RLBOX_ROOT:=../../cheri_rlbox
 
 # TODO: change these paths and add them formally to repo
-RWASM_ROOT?=../../../witchcraft
-MSWASM_SDK_ROOT?=../../../mswasm-wasi-sdk
+RWASM_ROOT?=../../tools/rWasm
+MSWASM_SDK_ROOT?=../../tools/mswasm-wasi-sdk
+
 
 # Morello cross-compilation definitions
 MORELLO_CC=$(MORELLO_SDK_ROOT)/bin/clang
@@ -31,7 +32,7 @@ WASI_SDK_ROOT:=$(RLBOX_ROOT)/build/_deps/wasiclang-src/
 WASM2C_ROOT=./$(RLBOX_ROOT)/build/_deps/mod_wasm2c-src
 WASM2C_ADDINS=$(WASM2C_ROOT)/wasm2c/wasm-rt-impl.c $(WASM2C_ROOT)/wasm2c/wasm-rt-os-unix.c $(WASM2C_ROOT)/wasm2c/wasm-rt-os-win.c $(WASM2C_ROOT)/wasm2c/wasm-rt-wasi.c -I$(WASM2C_ROOT)/wasm2c/
 WASI_SDK_FLAGS=-Wl,--export-all -Wl,--growable-table -Wl,--no-entry
-WASM2C_INCLUDES= -I $(RLBOX_ROOT)/build/_deps/mod_wasm2c-src/wasm2c/
+# WASM2C_INCLUDES= -I $(RLBOX_ROOT)/build/_deps/mod_wasm2c-src/wasm2c/
 
 
 # mswasm paths
