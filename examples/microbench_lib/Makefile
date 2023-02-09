@@ -56,7 +56,7 @@ $(OUTDIR)/microbenchmarks_cheri_pure_noop: build/my_lib_cheri.o microbenchmarks.
 $(OUTDIR)/microbenchmarks_cheri_pure_dylib: $(OUTDIR)/my_lib_cheri.so microbenchmarks.cpp
 	$(MORELLO_CXX) $(MORELLO_CFLAGS) $(MORELLO_PURE_FLAGS) -std=c++17 -DCHERI_DYLIB_SANDBOX microbenchmarks.cpp -o $@ $(RLBOX_INCLUDES) $(RLBOX_FLAGS)
 
-# cheri_libs: microbenchmarks_cheri_pure_noop microbenchmarks_cheri_pure_dylib microbenchmarks_cheri_hybrid_dylib
+all_cheri: $(OUTDIR)/microbenchmarks_cheri_pure_noop 
 
 
 
