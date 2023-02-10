@@ -37,8 +37,8 @@ dir:
 # app_sandboxed_better: my_lib.so
 # 	$(CXX_PURE) -std=c++17 app_sandboxed_better.cpp -o $@ $(RLBOX_INCLUDES)  $(WASM2C_INCLUDES) $(RLBOX_FLAGS)
 
-# app_sandboxed_cheri: 
-# 	$(CXX_PURE) -std=c++17 app_sandboxed.cpp -o $@ $(RLBOX_INCLUDES) $(WASM2C_INCLUDES) $(RLBOX_FLAGS)
+$(OUTDIR)/app_sandboxed_cheri_pure_noop: app_sandboxed.cpp lib.c
+	$(MORELLO_CXX) $(MORELLO_CFLAGS) $(MORELLO_PURE_FLAGS) -std=c++17 -DCHERI_NOOP_SANDBOX $^ -o $@ $(RLBOX_INCLUDES) $(RLBOX_FLAGS)
 
 # app_sandboxed_better_cheri: 
 # 	$(CXX_PURE) -std=c++17 app_sandboxed_better.cpp -o $@ $(RLBOX_INCLUDES)  $(WASM2C_INCLUDES) $(RLBOX_FLAGS)
@@ -50,7 +50,7 @@ dir:
 # app_sandboxed_better_hybrid: 
 # 	$(CXX_HYBRID) -std=c++17 app_sandboxed_better.cpp -o $@ $(RLBOX_INCLUDES)  $(WASM2C_INCLUDES) $(RLBOX_FLAGS)
 
-
+all_cheri: $(OUTDIR)/app_sandboxed_cheri_pure_noop
 
 ################################# Cheri MSWasm builds ########################################
 
@@ -67,7 +67,6 @@ $(OUTDIR)/my_lib_mswasm_cheri.so: build/my_lib.mswasm.c
 # Morello mswasm pure => pure
 $(OUTDIR)/app_sandboxed_cheri_mswasm: $(OUTDIR)/my_lib_mswasm_cheri.so app_sandboxed.cpp
 	$(MORELLO_CXX) $(MORELLO_CFLAGS) $(MORELLO_PURE_FLAGS) -DCHERI_MSWASM_SANDBOX -std=c++17  app_sandboxed.cpp -o $@ $(RLBOX_INCLUDES) $(RLBOX_FLAGS)
-
 
 all_mswasm: $(OUTDIR)/app_sandboxed_cheri_mswasm
 

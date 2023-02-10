@@ -3,44 +3,56 @@
 #include <iostream>
 #include <cstring>
 #include <string>
+
 #define RLBOX_SINGLE_THREADED_INVOCATIONS
+#ifdef NOOP_SANDBOX 
+    #define RLBOX_USE_STATIC_CALLS() rlbox_noop_sandbox_lookup_symbol
+#endif
+#ifdef CHERI_NOOP_SANDBOX 
+    #define RLBOX_USE_STATIC_CALLS() rlbox_cheri_noop_sandbox_lookup_symbol
+#endif
 #include "rlbox.hpp"
 
 #if defined(WASM2C_SANDBOX)
     #include "rlbox_wasm2c_sandbox.hpp"
-    typedef rlbox::rlbox_sandbox<rlbox::rlbox_wasm2c_sandbox> sbox_t;
-    #define CREATE_SANDBOX(sbox, path) sbox.create_sandbox(path);
+    typedef rlbox::rlbox_wasm2c_sandbox sbox_t;
+    typedef rlbox::rlbox_sandbox<rlbox::rlbox_wasm2c_sandbox> sbox;
+    #define CREATE_SANDBOX(sbx, path) sbx.create_sandbox(path);
 #elif defined(NOOP_SANDBOX)
     #include "rlbox_noop_sandbox.hpp"
-    typedef rlbox::rlbox_sandbox<rlbox::rlbox_noop_sandbox> sbox_t;
-    #define CREATE_SANDBOX(sbox, path) sbox.create_sandbox(); // if noop sandbox, throw path away
+    typedef rlbox::rlbox_noop_sandbox sbox_t;
+    typedef rlbox::rlbox_sandbox<rlbox::rlbox_noop_sandbox> sbox;
+    #define CREATE_SANDBOX(sbx, path) sbx.create_sandbox(); // if noop sandbox, throw path away
 #elif defined(CHERI_NOOP_SANDBOX)
     #include "rlbox_cheri_noop_sandbox.hpp"
-    typedef rlbox::rlbox_sandbox<rlbox::rlbox_cheri_noop_sandbox> sbox_t;
-    #define CREATE_SANDBOX(sbox, path) sbox.create_sandbox(); // if noop sandbox, throw path away
+    typedef rlbox::rlbox_cheri_noop_sandbox sbox_t;
+    typedef rlbox::rlbox_sandbox<rlbox::rlbox_cheri_noop_sandbox> sbox;
+    #define CREATE_SANDBOX(sbx, path) sbx.create_sandbox(); // if noop sandbox, throw path away
 #elif defined(CHERI_DYLIB_SANDBOX)
     #include "rlbox_cheri_dylib_sandbox.hpp"
-    typedef rlbox::rlbox_sandbox<rlbox::rlbox_cheri_dylib_sandbox> sbox_t;
-    #define CREATE_SANDBOX(sbox, path) sbox.create_sandbox(path);
+    typedef rlbox::rlbox_cheri_dylib_sandbox sbox_t;
+    typedef rlbox::rlbox_sandbox<rlbox::rlbox_cheri_dylib_sandbox> sbox;
+    #define CREATE_SANDBOX(sbx, path) sbx.create_sandbox(path);
 #elif defined(CHERI_MSWASM_SANDBOX)
     #include "mswasm/impl.hpp"
-    typedef rlbox::rlbox_sandbox<rlbox::rlbox_mswasm_sandbox> sbox_t;
-    #define CREATE_SANDBOX(sbox, path) sbox.create_sandbox(path);
+    typedef rlbox::rlbox_mswasm_sandbox sbox_t;
+    typedef rlbox::rlbox_sandbox<rlbox::rlbox_mswasm_sandbox> sbox;
+    #define CREATE_SANDBOX(sbx, path) sbx.create_sandbox(path);
 #else 
     static_assert(false, "No sandbox type defined");
 #endif
 
 //Callback on completion of library function
 // void on_completion(char* result) {
-void on_completion(sbox_t& _,
-            rlbox::tainted<char*, rlbox::rlbox_mswasm_sandbox> tainted_str){
+void on_completion(sbox& _,
+            rlbox::tainted<char*, sbox_t> tainted_str){
     char result_str[100];
     auto result = tainted_str.UNSAFE_unverified();
     strcpy(result_str, result);
     std::cout << "Done! Result = " << result_str << "\n";
 }
 
-auto copy_str_to_sandbox(sbox_t &sandbox, char* str){
+auto copy_str_to_sandbox(sbox &sandbox, char* str){
     size_t str_size = strlen(str) + 1;
     auto str_tainted = sandbox.malloc_in_sandbox<char>(str_size);
     // copy to sandbox
@@ -50,7 +62,7 @@ auto copy_str_to_sandbox(sbox_t &sandbox, char* str){
 
 int main(int argc, char const *argv[])
 {
-    sbox_t sandbox;
+    sbox sandbox;
     sandbox.create_sandbox("./my_lib.so");
 
     //check for input from command line
