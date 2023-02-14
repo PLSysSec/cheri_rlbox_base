@@ -18,25 +18,30 @@
 
 
 #if defined(WASM2C_SANDBOX)
-    #include "wasm2c/impl.hpp"
-    typedef rlbox::rlbox_sandbox<rlbox::rlbox_wasm2c_sandbox> sbox_t;
-    #define CREATE_SANDBOX(sbox, path) sbox.create_sandbox(path);
+    #include "rlbox_wasm2c_sandbox.hpp"
+    typedef rlbox::rlbox_wasm2c_sandbox sbox_t;
+    typedef rlbox::rlbox_sandbox<rlbox::rlbox_wasm2c_sandbox> sbox;
+    #define CREATE_SANDBOX(sbx, path, linear) sbx.create_sandbox(path);
 #elif defined(NOOP_SANDBOX)
     #include "rlbox_noop_sandbox.hpp"
-    typedef rlbox::rlbox_sandbox<rlbox::rlbox_noop_sandbox> sbox_t;
-    #define CREATE_SANDBOX(sbox, path) sbox.create_sandbox(); // if noop sandbox, throw path away
+    typedef rlbox::rlbox_noop_sandbox sbox_t;
+    typedef rlbox::rlbox_sandbox<rlbox::rlbox_noop_sandbox> sbox;
+    #define CREATE_SANDBOX(sbx, path, linear) sbx.create_sandbox(); // if noop sandbox, throw path away
 #elif defined(CHERI_NOOP_SANDBOX)
     #include "rlbox_cheri_noop_sandbox.hpp"
-    typedef rlbox::rlbox_sandbox<rlbox::rlbox_cheri_noop_sandbox> sbox_t;
-    #define CREATE_SANDBOX(sbox, path) sbox.create_sandbox(); // if noop sandbox, throw path away
+    typedef rlbox::rlbox_cheri_noop_sandbox sbox_t;
+    typedef rlbox::rlbox_sandbox<rlbox::rlbox_cheri_noop_sandbox> sbox;
+    #define CREATE_SANDBOX(sbx, path, linear) sbx.create_sandbox(linear); // if noop sandbox, throw path away
 #elif defined(CHERI_DYLIB_SANDBOX)
     #include "rlbox_cheri_dylib_sandbox.hpp"
-    typedef rlbox::rlbox_sandbox<rlbox::rlbox_cheri_dylib_sandbox> sbox_t;
-    #define CREATE_SANDBOX(sbox, path) sbox.create_sandbox(path);
+    typedef rlbox::rlbox_cheri_dylib_sandbox sbox_t;
+    typedef rlbox::rlbox_sandbox<rlbox::rlbox_cheri_dylib_sandbox> sbox;
+    #define CREATE_SANDBOX(sbx, path, linear) sbx.create_sandbox(path, linear);
 #elif defined(CHERI_MSWASM_SANDBOX)
     #include "mswasm/impl.hpp"
-    typedef rlbox::rlbox_sandbox<rlbox::rlbox_mswasm_sandbox> sbox_t;
-    #define CREATE_SANDBOX(sbox, path) sbox.create_sandbox(path);
+    typedef rlbox::rlbox_mswasm_sandbox sbox_t;
+    typedef rlbox::rlbox_sandbox<rlbox::rlbox_mswasm_sandbox> sbox;
+    #define CREATE_SANDBOX(sbx, path, linear) sbx.create_sandbox(path, true, 0, nullptr, "", linear);
 #else 
     static_assert(false, "No sandbox type defined");
 #endif
@@ -105,7 +110,7 @@ uint64_t get_ctr_overhead(uint64_t iterations) {
     return result;
 }
 
-uint64_t bench_empty_0args(sbox_t& sandbox, uint64_t iterations, uint64_t ctr_overhead) {
+uint64_t bench_empty_0args(sbox& sandbox, uint64_t iterations, uint64_t ctr_overhead) {
     uint64_t ctr = 0;
     for(int idx = 0; idx < iterations; idx++){
         uint64_t start = start_timer(); 
@@ -117,7 +122,7 @@ uint64_t bench_empty_0args(sbox_t& sandbox, uint64_t iterations, uint64_t ctr_ov
     return ctr;
 }
 
-uint64_t bench_empty_2args(sbox_t& sandbox, uint64_t iterations, uint64_t ctr_overhead) {
+uint64_t bench_empty_2args(sbox& sandbox, uint64_t iterations, uint64_t ctr_overhead) {
     uint64_t ctr = 0;
     for(int idx = 0; idx < iterations; idx++){
         uint64_t start = start_timer(); 
@@ -129,7 +134,7 @@ uint64_t bench_empty_2args(sbox_t& sandbox, uint64_t iterations, uint64_t ctr_ov
     return ctr;
 }
 
-uint64_t bench_empty_4args(sbox_t& sandbox, uint64_t iterations, uint64_t ctr_overhead) {
+uint64_t bench_empty_4args(sbox& sandbox, uint64_t iterations, uint64_t ctr_overhead) {
     uint64_t ctr = 0;
     for(int idx = 0; idx < iterations; idx++){
         uint64_t start = start_timer(); 
@@ -141,7 +146,7 @@ uint64_t bench_empty_4args(sbox_t& sandbox, uint64_t iterations, uint64_t ctr_ov
     return ctr;
 }
 
-uint64_t bench_empty_6args(sbox_t& sandbox, uint64_t iterations, uint64_t ctr_overhead) {
+uint64_t bench_empty_6args(sbox& sandbox, uint64_t iterations, uint64_t ctr_overhead) {
     uint64_t ctr = 0;
     for(int idx = 0; idx < iterations; idx++){
         uint64_t start = start_timer(); 
@@ -153,7 +158,7 @@ uint64_t bench_empty_6args(sbox_t& sandbox, uint64_t iterations, uint64_t ctr_ov
     return ctr;
 }
 
-uint64_t bench_empty_8args(sbox_t& sandbox, uint64_t iterations, uint64_t ctr_overhead) {
+uint64_t bench_empty_8args(sbox& sandbox, uint64_t iterations, uint64_t ctr_overhead) {
     uint64_t ctr = 0;
     for(int idx = 0; idx < iterations; idx++){
         uint64_t start = start_timer(); 
@@ -165,7 +170,7 @@ uint64_t bench_empty_8args(sbox_t& sandbox, uint64_t iterations, uint64_t ctr_ov
     return ctr;
 }
 
-uint64_t bench_empty_10args(sbox_t& sandbox, uint64_t iterations, uint64_t ctr_overhead) {
+uint64_t bench_empty_10args(sbox& sandbox, uint64_t iterations, uint64_t ctr_overhead) {
     uint64_t ctr = 0;
     for(int idx = 0; idx < iterations; idx++){
         uint64_t start = start_timer(); 
@@ -177,7 +182,7 @@ uint64_t bench_empty_10args(sbox_t& sandbox, uint64_t iterations, uint64_t ctr_o
     return ctr;
 }
 
-uint64_t bench_empty_12args(sbox_t& sandbox, uint64_t iterations, uint64_t ctr_overhead) {
+uint64_t bench_empty_12args(sbox& sandbox, uint64_t iterations, uint64_t ctr_overhead) {
     uint64_t ctr = 0;
     for(int idx = 0; idx < iterations; idx++){
         uint64_t start = start_timer(); 
@@ -189,7 +194,7 @@ uint64_t bench_empty_12args(sbox_t& sandbox, uint64_t iterations, uint64_t ctr_o
     return ctr;
 }
 
-uint64_t bench_data_transfer(sbox_t& sandbox, uint64_t iterations, uint64_t sz, uint64_t ctr_overhead) {
+uint64_t bench_data_transfer(sbox& sandbox, uint64_t iterations, uint64_t sz, uint64_t ctr_overhead) {
     uint64_t ctr = 0;
     // get host-space buf to copy to sandbox
     char* buf = (char*)malloc(sz); 
@@ -205,7 +210,7 @@ uint64_t bench_data_transfer(sbox_t& sandbox, uint64_t iterations, uint64_t sz, 
     return ctr;
 }
 
-auto copy_str_to_sandbox(sbox_t& sandbox, char* str){
+auto copy_str_to_sandbox(sbox& sandbox, char* str){
     size_t str_size = strlen(str) + 1;
     auto str_tainted = sandbox.malloc_in_sandbox<char>(str_size);
     // copy to sandbox
@@ -227,8 +232,8 @@ int main(int argc, char const *argv[])
         return 1;
     }
 
-    sbox_t sandbox;
-    CREATE_SANDBOX(sandbox, argv[1])
+    sbox sandbox;
+    CREATE_SANDBOX(sandbox, argv[1], false)
     //sandbox.create_sandbox("./my_lib.so");
 
 

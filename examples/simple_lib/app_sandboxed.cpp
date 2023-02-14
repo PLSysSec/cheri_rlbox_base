@@ -17,27 +17,27 @@
     #include "rlbox_wasm2c_sandbox.hpp"
     typedef rlbox::rlbox_wasm2c_sandbox sbox_t;
     typedef rlbox::rlbox_sandbox<rlbox::rlbox_wasm2c_sandbox> sbox;
-    #define CREATE_SANDBOX(sbx, path) sbx.create_sandbox(path);
+    #define CREATE_SANDBOX(sbx, path, linear) sbx.create_sandbox(path);
 #elif defined(NOOP_SANDBOX)
     #include "rlbox_noop_sandbox.hpp"
     typedef rlbox::rlbox_noop_sandbox sbox_t;
     typedef rlbox::rlbox_sandbox<rlbox::rlbox_noop_sandbox> sbox;
-    #define CREATE_SANDBOX(sbx, path) sbx.create_sandbox(); // if noop sandbox, throw path away
+    #define CREATE_SANDBOX(sbx, path, linear) sbx.create_sandbox(); // if noop sandbox, throw path away
 #elif defined(CHERI_NOOP_SANDBOX)
     #include "rlbox_cheri_noop_sandbox.hpp"
     typedef rlbox::rlbox_cheri_noop_sandbox sbox_t;
     typedef rlbox::rlbox_sandbox<rlbox::rlbox_cheri_noop_sandbox> sbox;
-    #define CREATE_SANDBOX(sbx, path) sbx.create_sandbox(); // if noop sandbox, throw path away
+    #define CREATE_SANDBOX(sbx, path, linear) sbx.create_sandbox(linear); // if noop sandbox, throw path away
 #elif defined(CHERI_DYLIB_SANDBOX)
     #include "rlbox_cheri_dylib_sandbox.hpp"
     typedef rlbox::rlbox_cheri_dylib_sandbox sbox_t;
     typedef rlbox::rlbox_sandbox<rlbox::rlbox_cheri_dylib_sandbox> sbox;
-    #define CREATE_SANDBOX(sbx, path) sbx.create_sandbox(path);
+    #define CREATE_SANDBOX(sbx, path, linear) sbx.create_sandbox(path, linear);
 #elif defined(CHERI_MSWASM_SANDBOX)
     #include "mswasm/impl.hpp"
     typedef rlbox::rlbox_mswasm_sandbox sbox_t;
     typedef rlbox::rlbox_sandbox<rlbox::rlbox_mswasm_sandbox> sbox;
-    #define CREATE_SANDBOX(sbx, path) sbx.create_sandbox(path);
+    #define CREATE_SANDBOX(sbx, path, linear) sbx.create_sandbox(path, true, 0, nullptr, "", linear);
 #else 
     static_assert(false, "No sandbox type defined");
 #endif
@@ -63,7 +63,7 @@ auto copy_str_to_sandbox(sbox &sandbox, char* str){
 int main(int argc, char const *argv[])
 {
     sbox sandbox;
-    sandbox.create_sandbox("./my_lib.so");
+    CREATE_SANDBOX(sandbox, argv[1], false)
 
     //check for input from command line
     if (argc < 3) {
