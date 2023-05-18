@@ -63,8 +63,7 @@ all_cheri: $(OUTDIR)/microbenchmarks_cheri_pure_noop
 #########################Cross-compiled Cheri MSWasm build ##########################
 
 build/my_lib.mswasm: lib.c lib.h dir
-	$(C_TO_MSWASM) $(RLBOX_ROOT)/c_src/wasm2c_sandbox_wrapper.c -c -o build/mswasm_sandbox_wrapper.o
-	$(C_TO_MSWASM) lib.c build/mswasm_sandbox_wrapper.o -o $@  
+	$(C_TO_MSWASM) lib.c -c -o $@  
 
 build/my_lib.mswasm.c: build/my_lib.mswasm
 	$(RWASM) $(RWASM_FLAGS) build/my_lib.mswasm  build/my_lib.mswasm

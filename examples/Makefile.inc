@@ -42,6 +42,6 @@ MSWASM_CC:=$(MSWASM_INSTALL)/bin/clang
 MSWASM_CXX:=$(MSWASM_INSTALL)/bin/clang++
 MSWASM_SYSROOT:=$(MSWASM_INSTALL)/share/wasi-sysroot
 
-RWASM_FLAGS=--wasi-library --ms-wasm --cheri
+RWASM_FLAGS=--wasi --library --ms-wasm --cheri
 
 C_TO_MSWASM=$(MSWASM_CC) --target=wasm32-wasi --sysroot $(MSWASM_SYSROOT)
